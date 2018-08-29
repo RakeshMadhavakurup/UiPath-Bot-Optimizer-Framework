@@ -6,15 +6,10 @@ On a high level, there are 3 logical components to this framework; a) Master Rob
 
 A new transaction for a process is triggered by creating a transaction item in the master queue. The transaction item will contain all the inputs for the master bot and well as the inputs required by the process which we intended to trigger.
 
-Features
-
-•	Build on top of RE Framework
-
-•	Auto dispatch transactions across multiple robots based on bot availability
-
-•	Cross Orchestrator and/or cross Tenant work distribution is supported
- 
-•	Process specific Robot assignment allows fine workload control
- 
-•	Able to manage workload of multiple different processes
+Features<br>
+&nbsp;&nbsp;•	Build on top of RE Framework<br>
+&nbsp;&nbsp;•	Auto dispatch transactions across multiple robots based on bot availability<br>
+&nbsp;&nbsp;•	Cross Orchestrator and/or cross Tenant work distribution is supported <br>
+&nbsp;&nbsp;•	Process specific Robot assignment allows fine workload control<br>
+&nbsp;&nbsp;•	Able to manage workload of multiple different processes<br>
  
