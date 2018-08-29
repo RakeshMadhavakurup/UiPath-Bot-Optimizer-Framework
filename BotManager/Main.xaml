@@ -1,0 +1,730 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Main" mva:VisualBasic.Settings="{x:Null}" sap2010:WorkflowViewState.IdRef="Main2_1"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:av="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:ui="http://schemas.uipath.com/workflow/activities"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System.Activities</x:String>
+      <x:String>System.Activities.Statements</x:String>
+      <x:String>System.Activities.Expressions</x:String>
+      <x:String>System.Activities.Validation</x:String>
+      <x:String>System.Activities.XamlIntegration</x:String>
+      <x:String>Microsoft.VisualBasic</x:String>
+      <x:String>Microsoft.VisualBasic.Activities</x:String>
+      <x:String>System</x:String>
+      <x:String>System.Collections</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Diagnostics</x:String>
+      <x:String>System.Drawing</x:String>
+      <x:String>System.IO</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Net.Mail</x:String>
+      <x:String>System.Xml</x:String>
+      <x:String>System.Xml.Linq</x:String>
+      <x:String>UiPath.Core</x:String>
+      <x:String>UiPath.Core.Activities</x:String>
+      <x:String>System.Windows.Markup</x:String>
+      <x:String>System.Xml.Serialization</x:String>
+      <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>Newtonsoft.Json</x:String>
+      <x:String>Microsoft.VisualBasic.CompilerServices</x:String>
+      <x:String>System.Net</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>UiPath.Core</AssemblyReference>
+      <AssemblyReference>UiPath.Core.Activities</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Composition</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualStudio.Services.Common</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <StateMachine sap2010:Annotation.AnnotationText="-- Robot Work Request Dispatcher --&#xA;Dispatches transactions to available bots in round robin fashion. &#xA;" DisplayName="Work Request Dispatcher" sap2010:WorkflowViewState.IdRef="StateMachine_1">
+    <StateMachine.InitialState>
+      <State x:Name="__ReferenceID2" sap2010:Annotation.AnnotationText="Read Config file, initialize error variables" DisplayName="Init" sap2010:WorkflowViewState.IdRef="State_2">
+        <State.Entry>
+          <TryCatch DisplayName="Catch intialization exceptions" sap2010:WorkflowViewState.IdRef="TryCatch_2">
+            <TryCatch.Try>
+              <Sequence DisplayName="Init State" sap2010:WorkflowViewState.IdRef="Sequence_4">
+                <Assign DisplayName="Initialize SystemError" sap2010:WorkflowViewState.IdRef="Assign_5">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="s:Exception">[SystemError]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="s:Exception">[Nothing]</InArgument>
+                  </Assign.Value>
+                </Assign>
+                <If Condition="[Process_Robots_Mapping is nothing]" DisplayName="If First Run Initialize Process_LastPostponeTime" sap2010:WorkflowViewState.IdRef="If_10">
+                  <If.Then>
+                    <Assign sap2010:WorkflowViewState.IdRef="Assign_17">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="scg:Dictionary(x:String, s:DateTime)">[Process_LastPostponeTime]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="scg:Dictionary(x:String, s:DateTime)">[New Dictionary(Of String, DateTime)]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                  </If.Then>
+                </If>
+                <If Condition="[Config is Nothing]" DisplayName="If first run - read Config file" sap2010:WorkflowViewState.IdRef="If_1">
+                  <If.Then>
+                    <Sequence DisplayName="First Run" sap2010:WorkflowViewState.IdRef="Sequence_17">
+                      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke InitAllSettings workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_12" UnSafe="False" WorkflowFileName="Framework\InitAllSettings.xaml">
+                        <ui:InvokeWorkflowFile.Arguments>
+                          <InArgument x:TypeArguments="x:String" x:Key="in_ConfigFile">Data\Config.xlsx</InArgument>
+                          <InArgument x:TypeArguments="s:String[]" x:Key="in_ConfigSheets">[{"Settings"}]</InArgument>
+                          <OutArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)" x:Key="out_Config">[Config]</OutArgument>
+                          <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_Process_Robots_Mapping">[Process_Robots_Mapping]</OutArgument>
+                          <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_Orchestrator_Mapping">[Orchestrator_Mapping]</OutArgument>
+                        </ui:InvokeWorkflowFile.Arguments>
+                      </ui:InvokeWorkflowFile>
+                      <ui:AddLogFields sap2010:Annotation.AnnotationText="Add BusinessProcessName" DisplayName="Add Log Fields" sap2010:WorkflowViewState.IdRef="AddLogFields_1">
+                        <ui:AddLogFields.Fields>
+                          <InArgument x:TypeArguments="x:String" x:Key="logF_BusinessProcessName">[Config("logF_BusinessProcessName").ToString]</InArgument>
+                        </ui:AddLogFields.Fields>
+                      </ui:AddLogFields>
+                    </Sequence>
+                  </If.Then>
+                </If>
+              </Sequence>
+            </TryCatch.Try>
+            <TryCatch.Catches>
+              <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_3">
+                <ActivityAction x:TypeArguments="s:Exception">
+                  <ActivityAction.Argument>
+                    <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                  </ActivityAction.Argument>
+                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_23">
+                    <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_26" Level="Error" Message="[&quot;Error while initialization. Error Messsage : &quot; + exception.Message]" />
+                    <Assign DisplayName="Assign excepton to SystemError" sap2010:WorkflowViewState.IdRef="Assign_14">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="s:Exception">[SystemError]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="s:Exception">[exception]</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                  </Sequence>
+                </ActivityAction>
+              </Catch>
+            </TryCatch.Catches>
+          </TryCatch>
+        </State.Entry>
+        <State.Transitions>
+          <Transition DisplayName="System Error" sap2010:WorkflowViewState.IdRef="Transition_3">
+            <Transition.To>
+              <State x:Name="__ReferenceID1" sap2010:Annotation.AnnotationText="Process stops here" DisplayName="End Process" sap2010:WorkflowViewState.IdRef="State_1" IsFinal="True">
+                <State.Entry>
+                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_22">
+                    <Sequence DisplayName="Ending Master Bot" sap2010:WorkflowViewState.IdRef="Sequence_12">
+                      <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_11" Level="Warn" Message="Master bot is stopping" />
+                    </Sequence>
+                  </Sequence>
+                </State.Entry>
+              </State>
+            </Transition.To>
+            <Transition.Action>
+              <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Fatal" Message="[&quot;System error at initialization: &quot; + SystemError.Message + &quot; at Source: &quot; + SystemError.Source]" />
+            </Transition.Action>
+            <Transition.Condition>[SystemError isNot Nothing]</Transition.Condition>
+          </Transition>
+          <Transition DisplayName="Success" sap2010:WorkflowViewState.IdRef="Transition_2">
+            <Transition.To>
+              <State x:Name="__ReferenceID0" sap2010:Annotation.AnnotationText="Get transaction item from Master Queue" DisplayName="Get Master Queue Transaction Data" sap2010:WorkflowViewState.IdRef="State_4">
+                <State.Entry>
+                  <Sequence sap2010:Annotation.AnnotationText="Data retrieval mechanism. The TransactionNumber variable holds the current transaction number. Incrementing this number means getting the next transaction. For a robot retry, the number is not increased, in case of application exception, until the max retry number.&#xA;TransactionItem type needs to be changed accordingly." DisplayName="Retrieve Data" sap2010:WorkflowViewState.IdRef="Sequence_1">
+                    <ui:ShouldStop DisplayName="Check Stop Signal" sap2010:WorkflowViewState.IdRef="ShouldStop_1" Result="[ShouldStop]" />
+                    <If Condition="[ShouldStop]" DisplayName="Should Stop or Get Next" sap2010:WorkflowViewState.IdRef="If_8">
+                      <If.Then>
+                        <Sequence DisplayName="Orchestrator stop requested" sap2010:WorkflowViewState.IdRef="Sequence_21">
+                          <ui:LogMessage DisplayName="Log Stop message" sap2010:WorkflowViewState.IdRef="LogMessage_25" Level="Info" Message="Stop process requested" />
+                          <Assign DisplayName="End Process" sap2010:WorkflowViewState.IdRef="Assign_15">
+                            <Assign.To>
+                              <OutArgument x:TypeArguments="ui:QueueItem">[TransactionItem]</OutArgument>
+                            </Assign.To>
+                            <Assign.Value>
+                              <InArgument x:TypeArguments="ui:QueueItem">[Nothing]</InArgument>
+                            </Assign.Value>
+                          </Assign>
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <TryCatch DisplayName="Try GetTransactionData" sap2010:WorkflowViewState.IdRef="TryCatch_5">
+                          <TryCatch.Try>
+                            <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke GetTransactionData workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_13" UnSafe="False" WorkflowFileName="Framework\GetTransactionData.xaml">
+                              <ui:InvokeWorkflowFile.Arguments>
+                                <InArgument x:TypeArguments="x:Int32" x:Key="in_TransactionNumber">[TransactionNumber]</InArgument>
+                                <InArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)" x:Key="in_Config">[Config]</InArgument>
+                                <OutArgument x:TypeArguments="ui:QueueItem" x:Key="out_TransactionItem">[TransactionItem]</OutArgument>
+                                <OutArgument x:TypeArguments="x:String" x:Key="out_TransactionField1">[TransactionField1]</OutArgument>
+                                <OutArgument x:TypeArguments="x:String" x:Key="out_TransactionField2">[TransactionField2]</OutArgument>
+                                <OutArgument x:TypeArguments="x:String" x:Key="out_TransactionID">[TransactionID]</OutArgument>
+                                <InOutArgument x:TypeArguments="sd:DataTable" x:Key="io_TransactionData">[TransactionData]</InOutArgument>
+                              </ui:InvokeWorkflowFile.Arguments>
+                            </ui:InvokeWorkflowFile>
+                          </TryCatch.Try>
+                          <TryCatch.Catches>
+                            <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_6">
+                              <ActivityAction x:TypeArguments="s:Exception">
+                                <ActivityAction.Argument>
+                                  <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                                </ActivityAction.Argument>
+                                <Sequence DisplayName="Log exception message and End process" sap2010:WorkflowViewState.IdRef="Sequence_13">
+                                  <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_12" Level="Fatal" Message="[Config(&quot;LogMessage_GetTransactionDataError&quot;).ToString+TransactionNumber.ToString+&quot;. &quot;+exception.Message+&quot; at Source: &quot;+exception.Source]" />
+                                  <Assign DisplayName="End Process" sap2010:WorkflowViewState.IdRef="Assign_16">
+                                    <Assign.To>
+                                      <OutArgument x:TypeArguments="ui:QueueItem">[TransactionItem]</OutArgument>
+                                    </Assign.To>
+                                    <Assign.Value>
+                                      <InArgument x:TypeArguments="ui:QueueItem">[Nothing]</InArgument>
+                                    </Assign.Value>
+                                  </Assign>
+                                </Sequence>
+                              </ActivityAction>
+                            </Catch>
+                          </TryCatch.Catches>
+                        </TryCatch>
+                      </If.Else>
+                    </If>
+                  </Sequence>
+                </State.Entry>
+                <State.Transitions>
+                  <Transition sap2010:Annotation.AnnotationText="This is a simple mecanism to stop the process.&#xA;In reallife scenario you can stop the process when there is no more data to process or on a schedule." DisplayName="No Data" sap2010:WorkflowViewState.IdRef="Transition_7">
+                    <Transition.To>
+                      <State x:Name="__ReferenceID4" sap2010:Annotation.AnnotationText="Bot sleeps for a predefined duration if no more transactions to process" DisplayName="Sleep State" sap2010:WorkflowViewState.IdRef="State_5">
+                        <State.Entry>
+                          <Delay Duration="00:00:30" sap2010:WorkflowViewState.IdRef="Delay_1" />
+                        </State.Entry>
+                        <State.Transitions>
+                          <Transition DisplayName="Check  for new transaction" sap2010:WorkflowViewState.IdRef="Transition_8" To="{x:Reference __ReferenceID0}" />
+                        </State.Transitions>
+                      </State>
+                    </Transition.To>
+                    <Transition.Action>
+                      <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_23" Level="Info" Message="Entering sleep mode due to no more transaction data" />
+                    </Transition.Action>
+                    <Transition.Condition>[TransactionItem Is Nothing]</Transition.Condition>
+                  </Transition>
+                  <Transition DisplayName="Stop Request" sap2010:WorkflowViewState.IdRef="Transition_11" To="{x:Reference __ReferenceID1}" Condition="[ShouldStop]" />
+                  <Transition DisplayName="New Transaction" sap2010:WorkflowViewState.IdRef="Transition_6">
+                    <Transition.To>
+                      <State x:Name="__ReferenceID3" sap2010:Annotation.AnnotationText="Process a Transaction Item from the Master Queue" DisplayName="Process Transaction" sap2010:WorkflowViewState.IdRef="State_3">
+                        <State.Entry>
+                          <TryCatch DisplayName="Process Transaction" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+                            <TryCatch.Try>
+                              <Sequence DisplayName="Process the current TransactionItem" sap2010:WorkflowViewState.IdRef="Sequence_2">
+                                <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="ui:BusinessRuleException">[BusinessRuleException]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="ui:BusinessRuleException">[Nothing]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke ProcessTransaction workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_9" UnSafe="False" WorkflowFileName="Process.xaml">
+                                  <ui:InvokeWorkflowFile.Arguments>
+                                    <InArgument x:TypeArguments="ui:QueueItem" x:Key="in_TransactionItem">[TransactionItem]</InArgument>
+                                    <InArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)" x:Key="in_Config">[Config]</InArgument>
+                                    <InArgument x:TypeArguments="sd:DataTable" x:Key="in_Process_Robots_Mapping">[Process_Robots_Mapping]</InArgument>
+                                    <InArgument x:TypeArguments="sd:DataTable" x:Key="in_Orchestrator_Mapping">[Orchestrator_Mapping]</InArgument>
+                                    <OutArgument x:TypeArguments="x:Boolean" x:Key="out_Transaction_Deferred">[transaction_Deferred]</OutArgument>
+                                    <InOutArgument x:TypeArguments="scg:Dictionary(x:String, s:DateTime)" x:Key="in_out_Process_LastPostponeTime">[Process_LastPostponeTime]</InOutArgument>
+                                  </ui:InvokeWorkflowFile.Arguments>
+                                </ui:InvokeWorkflowFile>
+                              </Sequence>
+                            </TryCatch.Try>
+                            <TryCatch.Catches>
+                              <Catch x:TypeArguments="ui:BusinessRuleException" sap2010:WorkflowViewState.IdRef="Catch`1_1">
+                                <ActivityAction x:TypeArguments="ui:BusinessRuleException">
+                                  <ActivityAction.Argument>
+                                    <DelegateInArgument x:TypeArguments="ui:BusinessRuleException" Name="exception" />
+                                  </ActivityAction.Argument>
+                                  <Assign DisplayName="Set transaction status to Rule Exception" sap2010:WorkflowViewState.IdRef="Assign_3">
+                                    <Assign.To>
+                                      <OutArgument x:TypeArguments="ui:BusinessRuleException">[BusinessRuleException]</OutArgument>
+                                    </Assign.To>
+                                    <Assign.Value>
+                                      <InArgument x:TypeArguments="ui:BusinessRuleException">[exception]</InArgument>
+                                    </Assign.Value>
+                                  </Assign>
+                                </ActivityAction>
+                              </Catch>
+                              <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_2">
+                                <ActivityAction x:TypeArguments="s:Exception">
+                                  <ActivityAction.Argument>
+                                    <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                                  </ActivityAction.Argument>
+                                  <Assign DisplayName="Set transaction status to SystemError" sap2010:WorkflowViewState.IdRef="Assign_4">
+                                    <Assign.To>
+                                      <OutArgument x:TypeArguments="s:Exception">[SystemError]</OutArgument>
+                                    </Assign.To>
+                                    <Assign.Value>
+                                      <InArgument x:TypeArguments="s:Exception">[exception]</InArgument>
+                                    </Assign.Value>
+                                  </Assign>
+                                </ActivityAction>
+                              </Catch>
+                            </TryCatch.Catches>
+                            <TryCatch.Finally>
+                              <TryCatch DisplayName="Set the Transaction Status and go to next Transaction" sap2010:WorkflowViewState.IdRef="TryCatch_6">
+                                <TryCatch.Try>
+                                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_24">
+                                    <If Condition="[transaction_Deferred]" DisplayName="If No Robots available and transaction is deferred then skip updating transaction status" sap2010:WorkflowViewState.IdRef="If_9">
+                                      <If.Else>
+                                        <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke SetTransactionStatus workflow" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_15" UnSafe="False" WorkflowFileName="Framework\SetTransactionStatus.xaml">
+                                          <ui:InvokeWorkflowFile.Arguments>
+                                            <InArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)" x:Key="in_Config">[Config]</InArgument>
+                                            <InArgument x:TypeArguments="s:Exception" x:Key="in_SystemError">[SystemError]</InArgument>
+                                            <InArgument x:TypeArguments="ui:BusinessRuleException" x:Key="in_BusinessRuleException">[BusinessRuleException]</InArgument>
+                                            <InArgument x:TypeArguments="ui:QueueItem" x:Key="in_TransactionItem">[TransactionItem]</InArgument>
+                                            <InOutArgument x:TypeArguments="x:Int32" x:Key="io_RetryNumber">[RetryNumber]</InOutArgument>
+                                            <InOutArgument x:TypeArguments="x:Int32" x:Key="io_TransactionNumber">[TransactionNumber]</InOutArgument>
+                                            <InArgument x:TypeArguments="x:String" x:Key="in_TransactionField1">[TransactionField1]</InArgument>
+                                            <InArgument x:TypeArguments="x:String" x:Key="in_TransactionField2">[TransactionField2]</InArgument>
+                                            <InArgument x:TypeArguments="x:String" x:Key="in_TransactionID">[TransactionID]</InArgument>
+                                          </ui:InvokeWorkflowFile.Arguments>
+                                        </ui:InvokeWorkflowFile>
+                                      </If.Else>
+                                    </If>
+                                  </Sequence>
+                                </TryCatch.Try>
+                                <TryCatch.Catches>
+                                  <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_7">
+                                    <ActivityAction x:TypeArguments="s:Exception">
+                                      <ActivityAction.Argument>
+                                        <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                                      </ActivityAction.Argument>
+                                      <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_24" Level="Fatal" Message="[&quot;SetTransactionStatus.xaml failed: &quot;+exception.Message+&quot; at Source: &quot;+exception.Source]" />
+                                    </ActivityAction>
+                                  </Catch>
+                                </TryCatch.Catches>
+                              </TryCatch>
+                            </TryCatch.Finally>
+                          </TryCatch>
+                        </State.Entry>
+                        <State.Transitions>
+                          <Transition DisplayName="Error" sap2010:WorkflowViewState.IdRef="Transition_4" To="{x:Reference __ReferenceID2}" Condition="[SystemError IsNot Nothing]" />
+                          <Transition DisplayName="Rule Exception" sap2010:WorkflowViewState.IdRef="Transition_1" To="{x:Reference __ReferenceID0}" Condition="[BusinessRuleException IsNot Nothing]" />
+                          <Transition sap2010:Annotation.AnnotationText="No need for any action here, in case of success simply go to next transaction" DisplayName="Success" sap2010:WorkflowViewState.IdRef="Transition_5" To="{x:Reference __ReferenceID0}" Condition="[SystemError Is Nothing And BusinessRuleException is Nothing]" />
+                        </State.Transitions>
+                      </State>
+                    </Transition.To>
+                    <Transition.Action>
+                      <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_22" Level="Info" Message="[&quot;Processing the transaction: &quot; + TransactionNumber.ToString]" />
+                    </Transition.Action>
+                    <Transition.Condition>[TransactionItem IsNot Nothing]</Transition.Condition>
+                  </Transition>
+                </State.Transitions>
+              </State>
+            </Transition.To>
+            <Transition.Action>
+              <ui:Comment sap2010:WorkflowViewState.IdRef="Comment_1" Text="Default transition is picked up if there are no errors during initialization" />
+            </Transition.Action>
+            <Transition.Condition>[SystemError is Nothing]</Transition.Condition>
+          </Transition>
+        </State.Transitions>
+        <State.Variables>
+          <Variable x:TypeArguments="x:String" Name="variable1" />
+        </State.Variables>
+      </State>
+    </StateMachine.InitialState>
+    <x:Reference>__ReferenceID0</x:Reference>
+    <x:Reference>__ReferenceID3</x:Reference>
+    <x:Reference>__ReferenceID1</x:Reference>
+    <x:Reference>__ReferenceID2</x:Reference>
+    <x:Reference>__ReferenceID4</x:Reference>
+    <StateMachine.Variables>
+      <Variable x:TypeArguments="ui:QueueItem" Name="TransactionItem" />
+      <Variable x:TypeArguments="s:Exception" Name="SystemError" />
+      <Variable x:TypeArguments="ui:BusinessRuleException" Name="BusinessRuleException" />
+      <Variable x:TypeArguments="x:Int32" Default="1" Name="TransactionNumber" />
+      <Variable x:TypeArguments="scg:Dictionary(x:String, x:Object)" Name="Config" />
+      <Variable x:TypeArguments="x:Int32" Default="0" Name="RetryNumber" />
+      <Variable x:TypeArguments="x:String" Name="TransactionField2" />
+      <Variable x:TypeArguments="x:String" Name="TransactionField1" />
+      <Variable x:TypeArguments="x:String" Name="TransactionID" />
+      <Variable x:TypeArguments="sd:DataTable" Name="TransactionData" />
+      <Variable x:TypeArguments="x:Boolean" Default="False" Name="ShouldStop" />
+      <Variable x:TypeArguments="sd:DataTable" Name="Process_Robots_Mapping" />
+      <Variable x:TypeArguments="sd:DataTable" Name="Orchestrator_Mapping" />
+      <Variable x:TypeArguments="x:Boolean" Name="transaction_Deferred" />
+      <Variable x:TypeArguments="scg:Dictionary(x:String, s:DateTime)" Name="Process_LastPostponeTime" />
+    </StateMachine.Variables>
+    <sads:DebugSymbol.Symbol>dzZDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcRGlzcGF0Y2hlclxNYWluLnhhbWx5RgP+AhICAQHwAjPwAjYDAbkB8gIz8gI2AwG4AfcCNfcCPAMBtwGhAQ/aAhcDAYEB7wEX0gIfAgE/kAEPmAEXAgE5SAflAg8CAQfeARflAR8CAQKjARPZAR4DAY0B6gEr6gFHAwGLAegBF+gBvQEDAYkB7AGWAewBpAEDAYcB1wIr1wJKAwGGAdUCF9UC0QEDAYMB8QEbywImAgFGzgKWAc4CswECAUPPAp8BzwLGAQIBQtACigLQAskCAgFBkgETlgEeAgE7SguLARYCAROdASOdAT4CARCbAQ+bAfYBAgEM3wIj3wI7AgEK3QIP3QKdAQIBCeABG+ABYgIBBaQBFaQBiwEDAbQBpQEV2AEaAwGOAegBhQHoAboBAwGKAdUChQHVAs4BAwGEAfMBH4YCKgIBbqkCH8kCKgIBUY4CI5UCLAIBTJ0CI6QCLAIBR5MBFZUBIAIBPEwPdRoCAR19E4cBHgIBFJsBfZsB8wECAQ3gASvgATUCAQakAXqkAYgBAwG1AaUBI6UBMQMBjwGnARmxASQDAa0BtAEZ1gEkAwGRAfQBIfsBKgIBffwBIYUCOQIBb6sCI70CLgIBVsUCJ8UChwICAVKTAl6TAmkCAU+QAl+QAnYCAU2iAlGiAlwCAUqfAlKfAl8CAUiUAReUAaABAgE9TRFUGgIBNVURYBYCAS9hEXQWAgEefhV+2AECARp/FYYBHgIBFagBG6gBqQEDAbIBqQEbsAEkAwGuAbYBHcABNQMBnQHIASHSASwDAZIB+QFc+QFlAwGAAfYBXfYBdAIBfoICb4IChQECAXuAAnKAAooBAgF5gQJwgQKGAQIBd4MCkwGDAq0BAgF1/wF4/wGAAQIBc/4Ba/4BfAIBcfwB2wH8AekBAgFwrAIlvAIqAgFXxQKWAcUChAICAVOUAYUBlAGdAQIBPlI/UkgCAThPQE9NAgE2VR9VRAIBMFcVXh4CATFhH2E0AgEfYxVyIAIBIX6EAX7VAQIBG4QBQ4QBTgIBGIEBRIEBUQIBFqgBjgGoAaYBAwGzAa4BSq4BUwMBsQGrAUurAVwDAa8BvAFnvAF6AwGrAbsBZ7sBegMBqQG9AWO9AXIDAacBugFpugF6AwGlAbgBZLgBdwMBowG5AXS5AXwDAaEBvgFqvgF7AwGfAbYB2AG2AfsBAwGeAckBI8kBvgIDAZcBygEj0QEsAwGTAawCM6wCSwIBWK4CKboCQQIBWlxcXIEBAgE0WV1ZdwIBMmQXbC8CASVtF3EpAgEiyQGSAckBuwIDAZgBzwFSzwFbAwGWAcwBU8wBZAMBlAGxAm6xAnsCAWyyAoUBsgKcAQIBarcCcbcChAECAWi2AnG2AoQBAgFmtAJttAJ6AgFksAKAAbACiAECAWKzAnOzAoQBAgFgtQJztQKGAQIBXrgCbbgCfAIBXK4C5gGuAosCAgFbaWppggECAS1ocGh4AgErZM8BZO8BAgEqamhqfgIBKGdcZ2oCASdmWGZoAgEmb2NvkAECASM=</sads:DebugSymbol.Symbol>
+  </StateMachine>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="464,60.8" />
+      <sap2010:ViewStateData Id="Assign_17" sap:VirtualizedContainerService.HintSize="243.2,60.8" />
+      <sap2010:ViewStateData Id="If_10" sap:VirtualizedContainerService.HintSize="464,211.2" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_12" sap:VirtualizedContainerService.HintSize="313.6,88" />
+      <sap2010:ViewStateData Id="AddLogFields_1" sap:VirtualizedContainerService.HintSize="313.6,50.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_17" sap:VirtualizedContainerService.HintSize="336,302.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="464,452.8">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="486.4,929.6">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_26" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Sequence_23" sap:VirtualizedContainerService.HintSize="336,315.2">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Catch`1_3" sap:VirtualizedContainerService.HintSize="489.6,22.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_2" sap:VirtualizedContainerService.HintSize="504,1241.6">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_11" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Sequence_12" sap:VirtualizedContainerService.HintSize="336,215">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_22" sap:VirtualizedContainerService.HintSize="358,339">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="State_1" sap:VirtualizedContainerService.HintSize="124,104">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">28,168</av:Point>
+            <av:Size x:Key="ShapeSize">124,104</av:Size>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Double x:Key="StateContainerWidth">110</x:Double>
+            <x:Double x:Key="StateContainerHeight">26</x:Double>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Transition_3" sap:VirtualizedContainerService.HintSize="430,796">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">379.8,119 379.8,149 83.8,149 83.8,168</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">15</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">34</x:Int32>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ShouldStop_1" sap:VirtualizedContainerService.HintSize="777.6,22.4" />
+      <sap2010:ViewStateData Id="LogMessage_25" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
+      <sap2010:ViewStateData Id="Assign_15" sap:VirtualizedContainerService.HintSize="313.6,60.8" />
+      <sap2010:ViewStateData Id="Sequence_21" sap:VirtualizedContainerService.HintSize="336,318.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_13" sap:VirtualizedContainerService.HintSize="313.6,88" />
+      <sap2010:ViewStateData Id="LogMessage_12" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Assign_16" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="336,52.8">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Catch`1_6" sap:VirtualizedContainerService.HintSize="403.2,22.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_5" sap:VirtualizedContainerService.HintSize="417.6,320">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_8" sap:VirtualizedContainerService.HintSize="777.6,470.4" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="800,717.6">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Delay_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Transition_8" sap:VirtualizedContainerService.HintSize="430,505">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">125,565.5 125,589.9 264.5,589.9 264.5,289.9 294.5,289.9</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">39</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">53</x:Int32>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="State_5" sap:VirtualizedContainerService.HintSize="372,514">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">33,419.5</av:Point>
+            <av:Size x:Key="ShapeSize">184,146</av:Size>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+            <x:Double x:Key="StateContainerWidth">170</x:Double>
+            <x:Double x:Key="StateContainerHeight">53</x:Double>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_23" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Transition_7" sap:VirtualizedContainerService.HintSize="430,853">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">410,323.5 410,353.5 180.2,353.5 180.2,419.5</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">39</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">62</x:Int32>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Transition_11">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">294.5,251.4 264.5,251.4 264.5,194 152,194</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">25</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">16</x:Int32>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_9" sap:VirtualizedContainerService.HintSize="314,87" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="336,311">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="404,21">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="Catch`1_2" sap:VirtualizedContainerService.HintSize="404,21">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_15" sap:VirtualizedContainerService.HintSize="313.6,88" />
+      <sap2010:ViewStateData Id="If_9" sap:VirtualizedContainerService.HintSize="464,238.4" />
+      <sap2010:ViewStateData Id="Sequence_24" sap:VirtualizedContainerService.HintSize="486.4,363.2">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_24" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
+      <sap2010:ViewStateData Id="Catch`1_7" sap:VirtualizedContainerService.HintSize="489.6,22.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_6" sap:VirtualizedContainerService.HintSize="504,675.2" />
+      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="418,600">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Transition_4" sap:VirtualizedContainerService.HintSize="429.6,509.6">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">387.7,554.8 387.7,582.65 597,582.65 597,72.65 567,72.65</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">23</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">40</x:Int32>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Transition_1" sap:VirtualizedContainerService.HintSize="429.6,509.6">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">440.45,554.8 440.45,575.1 555.5,575.1 555.5,245.1 525.5,245.1</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">43</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">20</x:Int32>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Transition_5" sap:VirtualizedContainerService.HintSize="429.6,553.6">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">482.65,554.8 482.65,584.8 555.5,584.8 555.5,289.9 525.5,289.9</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">59</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">52</x:Int32>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="State_3" sap:VirtualizedContainerService.HintSize="211,112">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">324.4,442.8</av:Point>
+            <av:Size x:Key="ShapeSize">211,112</av:Size>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Double x:Key="StateContainerWidth">197</x:Double>
+            <x:Double x:Key="StateContainerHeight">34</x:Double>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_22" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Transition_6" sap:VirtualizedContainerService.HintSize="430,796">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:PointCollection x:Key="ConnectorLocation">433.1,323.5 433.1,353.5 429.9,353.5 429.9,442.8</av:PointCollection>
+            <x:Int32 x:Key="SrcConnectionPointIndex">47</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">38</x:Int32>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="State_4" sap:VirtualizedContainerService.HintSize="231,112">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">294.5,211.5</av:Point>
+            <av:Size x:Key="ShapeSize">231,112</av:Size>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Double x:Key="StateContainerWidth">217</x:Double>
+            <x:Double x:Key="StateContainerHeight">34</x:Double>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Comment_1" sap:VirtualizedContainerService.HintSize="314,74" />
+      <sap2010:ViewStateData Id="Transition_2" sap:VirtualizedContainerService.HintSize="430,796">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Int32 x:Key="SrcConnectionPointIndex">23</x:Int32>
+            <x:Int32 x:Key="DestConnectionPointIndex">38</x:Int32>
+            <av:PointCollection x:Key="ConnectorLocation">403.2,119 403.2,149 409.5,149 409.5,211.5</av:PointCollection>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="State_2" sap:VirtualizedContainerService.HintSize="234,103">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">333,16</av:Point>
+            <av:Size x:Key="ShapeSize">234,103</av:Size>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+            <x:Double x:Key="StateContainerWidth">220</x:Double>
+            <x:Double x:Key="StateContainerHeight">25</x:Double>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="StateMachine_1" sap:VirtualizedContainerService.HintSize="786,801">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <av:Point x:Key="ShapeLocation">140,22.5</av:Point>
+            <x:Double x:Key="StateContainerWidth">772</x:Double>
+            <x:Double x:Key="StateContainerHeight">708</x:Double>
+            <av:PointCollection x:Key="ConnectorLocation">200,60 230,60 230,62.35 333,62.35</av:PointCollection>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Main2_1" sap:VirtualizedContainerService.HintSize="826,921" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

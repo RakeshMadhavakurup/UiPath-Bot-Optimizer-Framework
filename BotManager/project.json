@@ -1,0 +1,14 @@
+{
+  "name": "BotManager",
+  "description": "Bot Manager Framework",
+  "main": "Main.xaml",
+  "dependencies": {},
+  "excludedData": [
+    "Private:*",
+    "*password*"
+  ],
+  "toolVersion": "18.2",
+  "projectVersion": "1.0.6802.13331",
+  "packOptions": {},
+  "runtimeOptions": {}
+}
