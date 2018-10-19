@@ -16,8 +16,8 @@
     <x:Property Name="in_AccessToken" Type="InArgument(x:String)" />
     <x:Property Name="in_ReleaseKey" Type="InArgument(x:String)" />
     <x:Property Name="in_RobotID" Type="InArgument(x:String)" />
-    <x:Property Name="in_TransactionItem" Type="InArgument(ui:QueueItem)" />
     <x:Property Name="out_JobKey" Type="OutArgument(x:String)" />
+    <x:Property Name="in_ProcessName" Type="InArgument(x:String)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -50,6 +50,7 @@
       <x:String>Newtonsoft.Json.Converters</x:String>
       <x:String>Newtonsoft.Json</x:String>
       <x:String>Newtonsoft.Json.Linq</x:String>
+      <x:String>Microsoft.VisualBasic.CompilerServices</x:String>
     </sco:Collection>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
@@ -117,43 +118,59 @@
               <InArgument x:TypeArguments="x:String">[JsonObj("value")(0)("Id").ToString]</InArgument>
             </Assign.Value>
           </Assign>
-          <ui:SetTransactionProgress TimeoutMS="{x:Null}" DisplayName="Set transaction progress" sap2010:WorkflowViewState.IdRef="SetTransactionProgress_1" Progress="[http_Response]" TransactionItem="[in_TransactionItem]" />
+          <If Condition="[out_JobKey=&quot;&quot;]" sap2010:WorkflowViewState.IdRef="If_2">
+            <If.Then>
+              <Sequence sap2010:WorkflowViewState.IdRef="Sequence_4">
+                <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Error" Message="[&quot;Cannot start the job for process: '&quot; + in_ProcessName + &quot;'&quot;]" />
+                <Throw Exception="[new Exception(&quot;Cannot start the job for process: '&quot; + in_ProcessName + &quot;'&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_2" />
+              </Sequence>
+            </If.Then>
+          </If>
         </Sequence>
       </If.Then>
       <If.Else>
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_3">
-          <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Error" Message="[&quot;Cannot start the job for process: '&quot; + in_TransactionItem.SpecificContent(&quot;ProcessName&quot;).ToString + &quot;' Error Msg: &quot; + http_Response]" />
-          <Throw Exception="[new Exception(&quot;Cannot start the job for process: '&quot; + in_TransactionItem.SpecificContent(&quot;ProcessName&quot;).ToString + &quot;' Error Msg: &quot; + http_Response)]" sap2010:WorkflowViewState.IdRef="Throw_1" />
+          <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Error" Message="[&quot;Cannot start the job for process: '&quot; + in_ProcessName + &quot;' Error Msg: &quot; + http_Response]" />
+          <Throw Exception="[new Exception(&quot;Cannot start the job for process: '&quot; + in_ProcessName + &quot;' Error Msg: &quot; + http_Response)]" sap2010:WorkflowViewState.IdRef="Throw_1" />
         </Sequence>
       </If.Else>
     </If>
-    <sads:DebugSymbol.Symbol>d0VDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcRGlzcGF0Y2hlclxGcmFtZXdvcmtcQ3JlYXRlSm9iLnhhbWwhAZgGAZ4GAQUBmgEBuAUBBAHXBQH8BQEDAV4BegECTgODAQ4CAQFUBVoVAgEnWwVoFQIBG2kFgQEKAgECV0BXTAIBLFZDVlICASpYQVhLAgEoW6gEW64EAgEmW4QCW5ACAgEkYEZgVgIBIlvxA1uCBAIBIFvTAlusAwIBHluOBFudBAIBHGkTaU4CAQNrCXkUAgEMfAl/FAIBB28Lb8gBAgEWcAt3FAIBEngLeOEBAgENfQt9ogICAQp+C37+AQIBCG+0AW/FAQIBGW+dAW+oAQIBF3U2dVoCARVyN3JDAgETeKYBeLcBAgEQeMgBeN4BAgEOfXl9nwICAQt+HH7RAQIBCQ==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2JDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xDcmVhdGVKb2IueGFtbCUBmAYBngYBBQGaAQG4BQEEAdcFAfwFAQMBXgF6AQJPA4sBDgIBAVUFWxUCAS1cBWkVAgEhagWJAQoCAQJYQFhMAgEyV0NXUgIBMFlBWUsCAS5cqARcrgQCASxchAJckAICASphRmFWAgEoXPEDXIIEAgEmXNMCXKwDAgEkXI4EXJ0EAgEiahNqTgIBA2wJgQEUAgEOhAEJhwEUAgEHcAtwyAECARxxC3gUAgEYeQuAARACAQ+FAQuFAewBAgEKhgELhgHIAQIBCHC0AXDFAQIBH3CdAXCoAQIBHXY2dloCARtzN3NDAgEZeRl5NAIBEHsPfhoCARKFAXmFAekBAgELhgEchgGbAQIBCXwRfNYBAgEVfRF9sgECARN8f3zTAQIBFn0ifYUBAgEU</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="696,164.8" />
-      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="696,22.4" />
-      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="313.6,60.8" />
-      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="313.6,60.8" />
-      <sap2010:ViewStateData Id="SetTransactionProgress_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="336,348.8">
+      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="847,164" />
+      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="847,22" />
+      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Throw_2" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="336,277">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
-      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,280">
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,425" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="486,749">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="696,499.2" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="718.4,1063.2">
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,277">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="847,897" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="869,1449">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -161,7 +178,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="CreateJob_1" sap:VirtualizedContainerService.HintSize="758.4,1903.2" />
+      <sap2010:ViewStateData Id="CreateJob_1" sap:VirtualizedContainerService.HintSize="909,1569" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
