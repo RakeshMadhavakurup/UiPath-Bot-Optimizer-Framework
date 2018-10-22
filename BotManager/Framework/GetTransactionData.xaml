@@ -74,9 +74,9 @@
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence sap2010:Annotation.AnnotationText="Description: Get data from UiPath server queue and add to Local Database. If no new data, set out_TransactionItem to Nothing. &#xA;" DisplayName="GetTransactionData and Add to Local Queue" sap2010:WorkflowViewState.IdRef="Sequence_1">
-    <TryCatch DisplayName="Try catch" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+    <TryCatch DisplayName="Try catch- Get Queue Item" sap2010:WorkflowViewState.IdRef="TryCatch_1">
       <TryCatch.Try>
-        <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_4">
+        <Sequence DisplayName="Get Master Queue Item" sap2010:WorkflowViewState.IdRef="Sequence_4">
           <Assign sap2010:WorkflowViewState.IdRef="Assign_1">
             <Assign.To>
               <OutArgument x:TypeArguments="ui:QueueItem">[out_TransactionItem]</OutArgument>
@@ -102,7 +102,7 @@
         </Catch>
       </TryCatch.Catches>
     </TryCatch>
-    <If Condition="[out_TransactionItem isNot Nothing]" DisplayName="If a new Item is fetched " sap2010:WorkflowViewState.IdRef="If_1">
+    <If Condition="[out_TransactionItem isNot Nothing]" DisplayName="If a new queue item is fetched " sap2010:WorkflowViewState.IdRef="If_1">
       <If.Then>
         <Sequence sap2010:Annotation.AnnotationText="" DisplayName="Add Transaction Item to Local DB" sap2010:WorkflowViewState.IdRef="Sequence_2">
           <If Condition="[out_TransactionItem.SpecificContent.ContainsKey(&quot;ProcessName&quot;)]" DisplayName="Check if 'ProcessName' element present in Master Queue Item" sap2010:WorkflowViewState.IdRef="If_2">
@@ -115,43 +115,43 @@
                     <InArgument x:TypeArguments="x:String" x:Key="in_TableName">[in_Config("LocalQueueTable").ToString]</InArgument>
                   </ui:InvokeWorkflowFile.Arguments>
                 </ui:InvokeWorkflowFile>
-                <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Info" Message="[&quot;Orchestrator Transaction is queued for Process: '&quot; + out_TransactionItem.SpecificContent(&quot;ProcessName&quot;).ToString + &quot;'&quot;]" />
+                <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Info" Message="[&quot;Orchestrator Transaction is queued for Process: '&quot; + out_TransactionItem.SpecificContent(&quot;ProcessName&quot;).ToString + &quot;'. TranID: &quot; + out_TransactionItem.ItemKey.ToString]" />
                 <ui:SetTransactionProgress TimeoutMS="{x:Null}" DisplayName="Set transaction progress" sap2010:WorkflowViewState.IdRef="SetTransactionProgress_1" Progress="Queued for Idle Robot" TransactionItem="[out_TransactionItem]" />
               </Sequence>
             </If.Then>
             <If.Else>
               <Sequence sap2010:WorkflowViewState.IdRef="Sequence_6">
-                <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Error" Message="'ProcessName' is not available in the Master Queue Item. Aborting the transaction" />
-                <Throw Exception="[new BusinessRuleException(&quot;'ProcessName' is not available in the Master Queue Item&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_1" />
+                <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Error" Message="'ProcessName' is not available in the Master Queue Item. Setting the queue item in failed status" />
+                <Throw Exception="[new BusinessRuleException(&quot;'ProcessName' is not available in the Master Queue Item. Setting the queue item in failed status&quot;)]" sap2010:WorkflowViewState.IdRef="Throw_1" />
               </Sequence>
             </If.Else>
           </If>
         </Sequence>
       </If.Then>
     </If>
-    <sads:DebugSymbol.Symbol>d2tDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xHZXRUcmFuc2FjdGlvbkRhdGEueGFtbCJMA4UBDgIBAU0FaBACARtpBYMBCgIBAk8JWRQCASFhDWQYAgEcaRNpOAIBA2sJgQEUAgEEUAtXFAIBJ1gLWIUCAgEiYg9i2AECAR5jD2NGAgEdbAuAARACAQVVOlVDAgEqUjtSUAIBKFiqAVjaAQIBJVjrAViCAgIBI2J9YtUBAgEfbBlsZQIBBm4PeBoCAQx7D34aAgEHbxF1KQIBE3YRdpoCAgERdxF37gECAQ18EXzVAQIBCn0RfbEBAgEIcWRxeQIBGXJbcnACARdv1gFv9wECARZzUXN4AgEUdn52lwICARJ3rAF3wwECARB31AF36wECAQ58f3zSAQIBC30ifYQBAgEJ</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2tDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xHZXRUcmFuc2FjdGlvbkRhdGEueGFtbCJMA4UBDgIBAU0FaBACARtpBYMBCgIBAk8JWRQCASFhDWQYAgEcaRNpOAIBA2sJgQEUAgEEUAtXFAIBJ1gLWIUCAgEiYg9i2AECAR5jD2NGAgEdbAuAARACAQVVOlVDAgEqUjtSUAIBKFiqAVjaAQIBJVjrAViCAgIBI2J9YtUBAgEfbBlsZQIBBm4PeBoCAQx7D34aAgEHbxF1KQIBE3YRdssCAgERdxF37gECAQ18EXzkAQIBCn0RfdoBAgEIcWRxeQIBGXJbcnACARdv1gFv9wECARZzUXN4AgEUdn52yAICARJ3rAF3wwECARB31AF36wECAQ58f3zhAQIBC30ifa0BAgEJ</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="242,60" />
-      <sap2010:ViewStateData Id="GetQueueItem_1" sap:VirtualizedContainerService.HintSize="242,22" />
-      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="264,246">
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="243.2,60.8" />
+      <sap2010:ViewStateData Id="GetQueueItem_1" sap:VirtualizedContainerService.HintSize="243.2,22.4" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="265.6,246.4">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,91" />
-      <sap2010:ViewStateData Id="Rethrow_1" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,277">
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
+      <sap2010:ViewStateData Id="Rethrow_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,280">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="404,21">
+      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="400,350.4">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -159,37 +159,28 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="844,473" />
-      <sap2010:ViewStateData Id="InvokeWorkflowFile_2" sap:VirtualizedContainerService.HintSize="314,87" />
-      <sap2010:ViewStateData Id="LogMessage_3" sap:VirtualizedContainerService.HintSize="314,91" />
-      <sap2010:ViewStateData Id="SetTransactionProgress_1" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="336,404">
+      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="843.2,806.4" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_2" sap:VirtualizedContainerService.HintSize="313.6,88" />
+      <sap2010:ViewStateData Id="LogMessage_3" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
+      <sap2010:ViewStateData Id="SetTransactionProgress_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="336,408">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="314,91" />
-      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="336,277">
+      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
+      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
+      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="336,280">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="697,552" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="719,703">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="844,851" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="866,1530">
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="696,558.4" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="718.4,711.2">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -197,7 +188,16 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="GetTransactionData_1" sap:VirtualizedContainerService.HintSize="906,1890" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="843.2,862.4" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="865.6,1877.6">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="GetTransactionData_1" sap:VirtualizedContainerService.HintSize="905.6,2197.6" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

@@ -2,7 +2,8 @@
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
- xmlns:s="clr-namespace:SQLite;assembly=SQLiteActivities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:s1="clr-namespace:SQLite;assembly=SQLiteActivities"
  xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
  xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
@@ -81,7 +82,7 @@
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="InitializeLocalDBQueue" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="Get all master queue items which are in in-progress status and add to local database" DisplayName="InitializeLocalDBQueue" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="scg:IEnumerable(ui:QueueItem)" Name="temp_QueueItems" />
       <Variable x:TypeArguments="x:Int32" Name="skipCounter" />
@@ -111,134 +112,144 @@
         <InArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[Enumerable.Empty(of QueueItem)]</InArgument>
       </Assign.Value>
     </Assign>
-    <DoWhile DisplayName="Do while" sap2010:WorkflowViewState.IdRef="DoWhile_1" Condition="[temp_QueueItems.Count() &gt; 0]">
-      <Sequence DisplayName="Do while body" sap2010:WorkflowViewState.IdRef="Sequence_2">
-        <ui:GetQueueItems Duration="{x:Null}" From="{x:Null}" Priority="{x:Null}" Reference="{x:Null}" TimeoutMS="{x:Null}" To="{x:Null}" Top="{x:Null}" DisplayName="Get queue items" FilterStrategy="StartsWith" sap2010:WorkflowViewState.IdRef="GetQueueItems_1" QueueItemStates="InProgress" QueueName="[in_Master_Queue]" Result="[temp_QueueItems]" Skip="[skipCounter]" />
-        <If Condition="[temp_QueueItems.Count() &gt; 0]" sap2010:WorkflowViewState.IdRef="If_1">
-          <If.Then>
-            <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
+    <TryCatch DisplayName="Try catch- Get Orchestrator Master Queue Items" sap2010:WorkflowViewState.IdRef="TryCatch_1">
+      <TryCatch.Try>
+        <DoWhile DisplayName="Do while - Get all inprogress master queue items " sap2010:WorkflowViewState.IdRef="DoWhile_1" Condition="[temp_QueueItems.Count() &gt; 0]">
+          <Sequence DisplayName="Do while body" sap2010:WorkflowViewState.IdRef="Sequence_2">
+            <ui:GetQueueItems Duration="{x:Null}" From="{x:Null}" Priority="{x:Null}" Reference="{x:Null}" TimeoutMS="{x:Null}" To="{x:Null}" Top="{x:Null}" DisplayName="Get queue items" FilterStrategy="StartsWith" sap2010:WorkflowViewState.IdRef="GetQueueItems_1" QueueItemStates="InProgress" QueueName="[in_Master_Queue]" Result="[temp_QueueItems]" Skip="[skipCounter]" />
+            <If Condition="[temp_QueueItems.Count() &gt; 0]" sap2010:WorkflowViewState.IdRef="If_1">
+              <If.Then>
+                <Assign sap2010:WorkflowViewState.IdRef="Assign_3">
+                  <Assign.To>
+                    <OutArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems]</OutArgument>
+                  </Assign.To>
+                  <Assign.Value>
+                    <InArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems.Concat(temp_QueueItems)]</InArgument>
+                  </Assign.Value>
+                </Assign>
+              </If.Then>
+            </If>
+            <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
               <Assign.To>
-                <OutArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems]</OutArgument>
+                <OutArgument x:TypeArguments="x:Int32">[skipCounter]</OutArgument>
               </Assign.To>
               <Assign.Value>
-                <InArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems.Concat(temp_QueueItems)]</InArgument>
+                <InArgument x:TypeArguments="x:Int32">[skipCounter+100]</InArgument>
               </Assign.Value>
             </Assign>
-          </If.Then>
-        </If>
-        <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
-          <Assign.To>
-            <OutArgument x:TypeArguments="x:Int32">[skipCounter]</OutArgument>
-          </Assign.To>
-          <Assign.Value>
-            <InArgument x:TypeArguments="x:Int32">[skipCounter+100]</InArgument>
-          </Assign.Value>
-        </Assign>
-      </Sequence>
-    </DoWhile>
-    <Sequence DisplayName="Add to Local DB" sap2010:WorkflowViewState.IdRef="Sequence_7">
-      <Sequence.Variables>
-        <Variable x:TypeArguments="sd:DataTable" Name="dataTable" />
-        <Variable x:TypeArguments="x:String" Name="queueItemJson" />
-        <Variable x:TypeArguments="sd:DataTable" Name="sqlQueryResult" />
-      </Sequence.Variables>
-      <Assign sap2010:WorkflowViewState.IdRef="Assign_5">
-        <Assign.To>
-          <OutArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems.Reverse]</InArgument>
-        </Assign.Value>
-      </Assign>
-      <Assign sap2010:WorkflowViewState.IdRef="Assign_6">
-        <Assign.To>
-          <OutArgument x:TypeArguments="sd:DataTable">[dataTable]</OutArgument>
-        </Assign.To>
-        <Assign.Value>
-          <InArgument x:TypeArguments="sd:DataTable">[new DataTable()]</InArgument>
-        </Assign.Value>
-      </Assign>
-      <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="False" AutoIncrement="False" ColumnName="TransactionID" DataTable="[dataTable]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_4" MaxLength="100" Unique="True" />
-      <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="False" AutoIncrement="False" ColumnName="ProcessName" DataTable="[dataTable]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_5" MaxLength="100" Unique="False" />
-      <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="False" AutoIncrement="False" ColumnName="QueueItem" DataTable="[dataTable]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_6" MaxLength="50000" Unique="False" />
-      <ui:ForEach x:TypeArguments="ui:QueueItem" DisplayName="For each" sap2010:WorkflowViewState.IdRef="ForEach`1_3" Values="[openQueueItems]">
-        <ui:ForEach.Body>
-          <ActivityAction x:TypeArguments="ui:QueueItem">
+          </Sequence>
+        </DoWhile>
+      </TryCatch.Try>
+      <TryCatch.Catches>
+        <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_1">
+          <ActivityAction x:TypeArguments="s:Exception">
             <ActivityAction.Argument>
-              <DelegateInArgument x:TypeArguments="ui:QueueItem" Name="item" />
+              <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
             </ActivityAction.Argument>
-            <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_5">
-              <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
-                <Assign.To>
-                  <OutArgument x:TypeArguments="x:String">[queueItemJson]</OutArgument>
-                </Assign.To>
-                <Assign.Value>
-                  <InArgument x:TypeArguments="x:String">[JsonConvert.SerializeObject(item)]</InArgument>
-                </Assign.Value>
-              </Assign>
-              <If Condition="[item.SpecificContent.ContainsKey(&quot;ProcessName&quot;)]" sap2010:WorkflowViewState.IdRef="If_2">
-                <If.Then>
-                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_10">
-                    <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[{item.ItemKey.ToString,item.SpecificContent(&quot;ProcessName&quot;).ToString,queueItemJson}]" DataTable="[dataTable]" DisplayName="Add data row" sap2010:WorkflowViewState.IdRef="AddDataRow_1" />
-                    <ui:InvokeCode ContinueOnError="{x:Null}" Code="If (Not PendingProcessList.Contains(ProcessName))&#xA; PendingProcessList.Enqueue(ProcessName)&#xA;End If" DisplayName="Add to Pending ProcessList" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
-                      <ui:InvokeCode.Arguments>
-                        <InOutArgument x:TypeArguments="sc:Queue" x:Key="PendingProcessList">[in_out_PendingProcessList]</InOutArgument>
-                        <InArgument x:TypeArguments="x:String" x:Key="ProcessName">[item.SpecificContent("ProcessName").ToString]</InArgument>
-                      </ui:InvokeCode.Arguments>
-                    </ui:InvokeCode>
-                  </Sequence>
-                </If.Then>
-              </If>
+            <Sequence DisplayName="Catch exception" sap2010:WorkflowViewState.IdRef="Sequence_11">
+              <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;Error while getting orchestrator master queue items. Error:- &quot; + exception.Message]" />
+              <Rethrow sap2010:WorkflowViewState.IdRef="Rethrow_1" />
             </Sequence>
           </ActivityAction>
-        </ui:ForEach.Body>
-      </ui:ForEach>
-      <s:ExecuteQuery DatabaseFullPath="{x:Null}" Connection="[in_SQLiteConnection]" DisplayName="Execute query" sap2010:WorkflowViewState.IdRef="ExecuteQuery_2" QueryResult="[sqlQueryResult]" SQLCommand="[&quot;DROP TABLE IF EXISTS &quot; + in_LocalQueueTable + &quot;;&quot;]" />
-      <s:InsertDatatable DatabaseFullPath="{x:Null}" PrimaryKey="{x:Null}" Connection="[in_SQLiteConnection]" Datatable="[dataTable]" DisplayName="Insert datatable" sap2010:WorkflowViewState.IdRef="InsertDatatable_1" Table="[in_LocalQueueTable]" />
-    </Sequence>
-    <sads:DebugSymbol.Symbol>d29DOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xJbml0aWFsaXplTG9jYWxEQlF1ZXVlLnhhbWxCAXgBhQEBAwG2AQHHAQECVAPIAQ4CAQFaBWEOAgFQYgVpDgIBTGoFcQ4CAUlyBYoBDwIBNosBBcYBEAIBAl8wXz0CAVNcMVxMAgFRZy9nMAIBT2QwZD0CAU1vRW9lAgFLbEZsVgIBSnJbcn0CAUhzB4kBEgIBN5EBB5gBEAIBM5kBB6ABEAIBL6EBB6EBrQICASuiAQeiAawCAgEnowEHowGsAgIBI6QBB8MBFAIBEcQBB8QBmgICAQrFAQfFAfkBAgEDdAl08wICAUJ1CYABDgIBPYEBCYgBEgIBOJYBR5YBXwIBNZMBSJMBWAIBNJ4BNp4BRwIBMpsBN5sBQgIBMKEBkwGhAaIBAgEuoQGtAaEBugECASyiAZMBogGgAQIBKqIBqwGiAbgBAgEoowGTAaMBngECASajAakBowG2AQIBJKQBfqQBkAECASKqAQ3AARgCARLEAa8BxAHBAQIBD8QBPsQBVQIBDcQBzQHEAZcCAgELxQHgAcUB9gECAQjFAXnFAYYBAgEGxQFXxQFuAgEEdK0CdMACAgFGdMgCdNsCAgFFdOECdPACAgFDdRd1OQIBPncNfhYCAT+GATOGAUQCATuDATSDAUECATmrAQ+yARgCAR6zAQ+/ARQCARN8TXx1AgFBeU55XgIBQLABOrABXQIBIa0BO60BSgIBH7MBHbMBWgIBFLUBE70BHgIBFbYBFbYBhQICARq3ARW8ASUCARa2AasBtgG4AQIBHLYBQLYBoAECARu5AV65AXkCARi6AVS6AYIBAgEX</sads:DebugSymbol.Symbol>
+        </Catch>
+      </TryCatch.Catches>
+    </TryCatch>
+    <TryCatch DisplayName="Try catch -Adding Master Queue items to Local DB" sap2010:WorkflowViewState.IdRef="TryCatch_2">
+      <TryCatch.Try>
+        <Sequence DisplayName="Add all inprogress master queue items to Local DB" sap2010:WorkflowViewState.IdRef="Sequence_7">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="sd:DataTable" Name="dataTable" />
+            <Variable x:TypeArguments="x:String" Name="queueItemJson" />
+            <Variable x:TypeArguments="sd:DataTable" Name="sqlQueryResult" />
+          </Sequence.Variables>
+          <Assign sap2010:WorkflowViewState.IdRef="Assign_5">
+            <Assign.To>
+              <OutArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="scg:IEnumerable(ui:QueueItem)">[openQueueItems.Reverse]</InArgument>
+            </Assign.Value>
+          </Assign>
+          <Assign sap2010:WorkflowViewState.IdRef="Assign_6">
+            <Assign.To>
+              <OutArgument x:TypeArguments="sd:DataTable">[dataTable]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="sd:DataTable">[new DataTable()]</InArgument>
+            </Assign.Value>
+          </Assign>
+          <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="False" AutoIncrement="False" ColumnName="TransactionID" DataTable="[dataTable]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_4" MaxLength="100" Unique="True" />
+          <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="False" AutoIncrement="False" ColumnName="ProcessName" DataTable="[dataTable]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_5" MaxLength="100" Unique="False" />
+          <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="False" AutoIncrement="False" ColumnName="QueueItem" DataTable="[dataTable]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_6" MaxLength="50000" Unique="False" />
+          <ui:ForEach x:TypeArguments="ui:QueueItem" DisplayName="For each queue items" sap2010:WorkflowViewState.IdRef="ForEach`1_3" Values="[openQueueItems]">
+            <ui:ForEach.Body>
+              <ActivityAction x:TypeArguments="ui:QueueItem">
+                <ActivityAction.Argument>
+                  <DelegateInArgument x:TypeArguments="ui:QueueItem" Name="item" />
+                </ActivityAction.Argument>
+                <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_5">
+                  <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
+                    <Assign.To>
+                      <OutArgument x:TypeArguments="x:String">[queueItemJson]</OutArgument>
+                    </Assign.To>
+                    <Assign.Value>
+                      <InArgument x:TypeArguments="x:String">[JsonConvert.SerializeObject(item)]</InArgument>
+                    </Assign.Value>
+                  </Assign>
+                  <If Condition="[item.SpecificContent.ContainsKey(&quot;ProcessName&quot;)]" sap2010:WorkflowViewState.IdRef="If_2">
+                    <If.Then>
+                      <Sequence sap2010:WorkflowViewState.IdRef="Sequence_10">
+                        <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[{item.ItemKey.ToString,item.SpecificContent(&quot;ProcessName&quot;).ToString,queueItemJson}]" DataTable="[dataTable]" DisplayName="Add data row" sap2010:WorkflowViewState.IdRef="AddDataRow_1" />
+                        <ui:InvokeCode ContinueOnError="{x:Null}" Code="If (Not PendingProcessList.Contains(ProcessName))&#xA; PendingProcessList.Enqueue(ProcessName)&#xA;End If" DisplayName="Add to Pending ProcessList" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+                          <ui:InvokeCode.Arguments>
+                            <InOutArgument x:TypeArguments="sc:Queue" x:Key="PendingProcessList">[in_out_PendingProcessList]</InOutArgument>
+                            <InArgument x:TypeArguments="x:String" x:Key="ProcessName">[item.SpecificContent("ProcessName").ToString]</InArgument>
+                          </ui:InvokeCode.Arguments>
+                        </ui:InvokeCode>
+                      </Sequence>
+                    </If.Then>
+                  </If>
+                </Sequence>
+              </ActivityAction>
+            </ui:ForEach.Body>
+          </ui:ForEach>
+          <s1:ExecuteQuery DatabaseFullPath="{x:Null}" Connection="[in_SQLiteConnection]" DisplayName="Execute query" sap2010:WorkflowViewState.IdRef="ExecuteQuery_2" QueryResult="[sqlQueryResult]" SQLCommand="[&quot;DROP TABLE IF EXISTS &quot; + in_LocalQueueTable + &quot;;&quot;]" />
+          <s1:InsertDatatable DatabaseFullPath="{x:Null}" PrimaryKey="{x:Null}" Connection="[in_SQLiteConnection]" Datatable="[dataTable]" DisplayName="Insert datatable" sap2010:WorkflowViewState.IdRef="InsertDatatable_1" Table="[in_LocalQueueTable]" />
+        </Sequence>
+      </TryCatch.Try>
+      <TryCatch.Catches>
+        <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_2">
+          <ActivityAction x:TypeArguments="s:Exception">
+            <ActivityAction.Argument>
+              <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+            </ActivityAction.Argument>
+            <Sequence DisplayName="Catch exception" sap2010:WorkflowViewState.IdRef="Sequence_12">
+              <ui:LogMessage DisplayName="Log message" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;Error while adding master queue items to database. Error:- &quot; + exception.Message]" />
+              <Rethrow sap2010:WorkflowViewState.IdRef="Rethrow_2" />
+            </Sequence>
+          </ActivityAction>
+        </Catch>
+      </TryCatch.Catches>
+    </TryCatch>
+    <sads:DebugSymbol.Symbol>d29DOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xJbml0aWFsaXplTG9jYWxEQlF1ZXVlLnhhbWxMAXgBhQEBAwG2AQHHAQECVQPrAQ4CAQFbBWIOAgFcYwVqDgIBWGsFcg4CAVVzBZwBEAIBPJ0BBekBEAIBAmAwYD0CAV9dMV1MAgFdaC9oMAIBW2UwZT0CAVlwRXBlAgFXbUZtVgIBVnUJjQETAgFClQENmAEYAgE9nwEJ2gEUAgEI4gEN5QEYAgEDdYgBdaoBAgFUdguMARYCAUOWAQ+WAeABAgE/lwEPlwFGAgE+pQELrAEUAgE5rQELtAEUAgE1tQELtQGxAgIBMbYBC7YBsAICAS23AQu3AbACAgEpuAEL1wEYAgEX2AEL2AGfAgIBENkBC9kB/gECAQnjAQ/jAd4BAgEF5AEP5AFGAgEEdw139wICAU54DYMBEgIBSYQBDYsBFgIBRJYBfJYB3QECAUCqAUuqAWMCATunAUynAVwCATqyATqyAUsCATivATuvAUYCATa1AZcBtQGmAQIBNLUBsQG1Ab4BAgEytgGXAbYBpAECATC2Aa8BtgG8AQIBLrcBlwG3AaIBAgEstwGtAbcBugECASq4AY4BuAGgAQIBKL4BEdQBHAIBGNgBtAHYAcYBAgEV2AFD2AFaAgET2AHSAdgBnAICARHZAeUB2QH7AQIBDtkBftkBiwECAQzZAVzZAXMCAQrjAXzjAdsBAgEGd7ECd8QCAgFSd8wCd98CAgFRd+UCd/QCAgFPeBt4PQIBSnoRgQEaAgFLiQE3iQFIAgFHhgE4hgFFAgFFvwETxgEcAgEkxwET0wEYAgEZf1F/eQIBTXxSfGICAUzEAT7EAWECASfBAT/BAU4CASXHASHHAV4CARrJARfRASICARvKARnKAYkCAgEgywEZ0AEpAgEcygGvAcoBvAECASLKAUTKAaQBAgEhzQFizQF9AgEezgFYzgGGAQIBHQ==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="Assign_8" sap:VirtualizedContainerService.HintSize="524,60" />
-      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="524,60" />
-      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="524,60" />
-      <sap2010:ViewStateData Id="GetQueueItems_1" sap:VirtualizedContainerService.HintSize="464,22" />
-      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="242,60" />
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="464,208" />
-      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="464,60" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="486,494">
+      <sap2010:ViewStateData Id="Assign_8" sap:VirtualizedContainerService.HintSize="417.6,60.8" />
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="417.6,60.8" />
+      <sap2010:ViewStateData Id="Assign_4" sap:VirtualizedContainerService.HintSize="417.6,60.8" />
+      <sap2010:ViewStateData Id="GetQueueItems_1" sap:VirtualizedContainerService.HintSize="464,22.4" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="243.2,60.8" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="464,211.2" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="464,60.8" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="486.4,499.2">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="524,656" />
-      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="502,60" />
-      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="502,60" />
-      <sap2010:ViewStateData Id="AddDataColumn`1_4" sap:VirtualizedContainerService.HintSize="502,22" />
-      <sap2010:ViewStateData Id="AddDataColumn`1_5" sap:VirtualizedContainerService.HintSize="502,22" />
-      <sap2010:ViewStateData Id="AddDataColumn`1_6" sap:VirtualizedContainerService.HintSize="502,22" />
-      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="464,60" />
-      <sap2010:ViewStateData Id="AddDataRow_1" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="314,164" />
-      <sap2010:ViewStateData Id="Sequence_10" sap:VirtualizedContainerService.HintSize="336,350">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,498" />
-      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="486,722">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEach`1_3" sap:VirtualizedContainerService.HintSize="502,856">
+      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="512,662.4">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -246,23 +257,91 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ExecuteQuery_2" sap:VirtualizedContainerService.HintSize="502,22" />
-      <sap2010:ViewStateData Id="InsertDatatable_1" sap:VirtualizedContainerService.HintSize="502,22" />
-      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="524,1490">
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
+      <sap2010:ViewStateData Id="Rethrow_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
+      <sap2010:ViewStateData Id="Sequence_11" sap:VirtualizedContainerService.HintSize="336,280">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="546,2610">
+      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="400,350.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="417.6,516.8" />
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="243.2,60.8" />
+      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="243.2,60.8" />
+      <sap2010:ViewStateData Id="AddDataColumn`1_4" sap:VirtualizedContainerService.HintSize="243.2,22.4" />
+      <sap2010:ViewStateData Id="AddDataColumn`1_5" sap:VirtualizedContainerService.HintSize="243.2,22.4" />
+      <sap2010:ViewStateData Id="AddDataColumn`1_6" sap:VirtualizedContainerService.HintSize="243.2,22.4" />
+      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="464,60.8" />
+      <sap2010:ViewStateData Id="AddDataRow_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
+      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="313.6,164.8" />
+      <sap2010:ViewStateData Id="Sequence_10" sap:VirtualizedContainerService.HintSize="336,352">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="InitializeLocalDBQueue_1" sap:VirtualizedContainerService.HintSize="586,2890" />
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,502.4" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="486.4,728">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_3" sap:VirtualizedContainerService.HintSize="243.2,52.8">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ExecuteQuery_2" sap:VirtualizedContainerService.HintSize="243.2,22.4" />
+      <sap2010:ViewStateData Id="InsertDatatable_1" sap:VirtualizedContainerService.HintSize="243.2,22.4" />
+      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="265.6,691.2">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
+      <sap2010:ViewStateData Id="Rethrow_2" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
+      <sap2010:ViewStateData Id="Sequence_12" sap:VirtualizedContainerService.HintSize="336,280">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Catch`1_2" sap:VirtualizedContainerService.HintSize="403.2,22.4">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="TryCatch_2" sap:VirtualizedContainerService.HintSize="417.6,923.2" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="440,1951.2">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InitializeLocalDBQueue_1" sap:VirtualizedContainerService.HintSize="480,2111.2" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
