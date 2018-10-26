@@ -15,6 +15,7 @@
     <x:Property Name="in_Orch_BaseUrl" Type="InArgument(x:String)" />
     <x:Property Name="in_AccessToken" Type="InArgument(x:String)" />
     <x:Property Name="out_TransactionID" Type="OutArgument(x:String)" />
+    <x:Property Name="in_HttpTimeoutMS" Type="InArgument(x:Int32)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -70,7 +71,7 @@
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="Copy Data from Master Queue Item and create process specific Queue Item&#xA;&#xA;Inputs:- &#xA;Transaction Item&#xA;Orchestrator Base URL&#xA;Orchestrator Access Token &#xA;Output:- &#xA;Transaction ID " DisplayName="CreateProcess_Specific_Queue" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="Copy master queue item and create the same in process specific queue&#xA;&#xA;Inputs:- &#xA;  Transaction Item&#xA;  Orchestrator Base URL&#xA;  Orchestrator Access Token &#xA;  Http Timeout (in milliseconds)&#xA;&#xA;Output:- &#xA;  Transaction ID " DisplayName="CreateProcess_Specific_Queue" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence DisplayName="Process Queue Item" sap2010:WorkflowViewState.IdRef="Sequence_2">
       <Sequence.Variables>
         <Variable x:TypeArguments="x:String" Name="transactionItemJson" />
@@ -106,7 +107,7 @@
           <OutArgument x:TypeArguments="x:String" x:Key="JsonOut">[jsonText]</OutArgument>
         </ui:InvokeCode.Arguments>
       </ui:InvokeCode>
-      <ui:HttpClient ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="JSON" Body="[jsontext]" BodyFormat="application/json" DisplayName="HTTP Request" EndPoint="[in_Orch_BaseUrl + &quot;/odata/Queues/UiPathODataSvc.AddQueueItem&quot;]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="POST" Result="[http_Response]" StatusCode="[http_Status]" TimeoutMS="6000">
+      <ui:HttpClient ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="JSON" Body="[jsontext]" BodyFormat="application/json" DisplayName="HTTP Request" EndPoint="[in_Orch_BaseUrl + &quot;/odata/Queues/UiPathODataSvc.AddQueueItem&quot;]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="POST" Result="[http_Response]" StatusCode="[http_Status]" TimeoutMS="[in_HttpTimeoutMS]">
         <ui:HttpClient.Attachments>
           <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
         </ui:HttpClient.Attachments>
@@ -143,43 +144,43 @@
         </If.Else>
       </If>
     </Sequence>
-    <sads:DebugSymbol.Symbol>d3VDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xDcmVhdGVQcm9jZXNzX1NwZWNpZmljX1F1ZXVlLnhhbWwnSQOTAQ4CAQFKBZEBEAIBAlIHWRACATVaB2MQAgExZAdkygECASxlB2wXAgEmbQd6FwIBGnsHkAEMAgEDVzJXYwIBOFQzVEgCATZgDWA8AgE0XDNcRgIBMmSwAWTHAQIBL2SZAWSkAQIBLWhDaGkCAStnRGd+AgEqaUppZgIBKWpDak0CASdtnARtogQCASVthgJtkgICASNySHJYAgEhbeUDbfYDAgEfbdUCbaADAgEdbYIEbZEEAgEbexV7UAIBBH0LiAEWAgENiwELjgEWAgEIfg1+ygECARV/DYYBFgIBEYcBDYcB3wECAQ6MAQ2MAbgCAgELjQENjQGTAgIBCX62AX7HAQIBGH6fAX6qAQIBFoQBOIQBUAIBFIEBOYEBTAIBEocBeocB3AECAQ+MAXuMAbUCAgEMjQEejQHmAQIBCg==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d3VDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xDcmVhdGVQcm9jZXNzX1NwZWNpZmljX1F1ZXVlLnhhbWwnSgOUAQ4CAQFLBZIBEAIBAlMHWhACATZbB2QQAgEyZQdlygECAS1mB20XAgEnbgd7FwIBGnwHkQEMAgEDWDJYYwIBOVUzVUgCATdhDWE8AgE1XTNdRgIBM2WwAWXHAQIBMGWZAWWkAQIBLmlDaWkCASxoRGh+AgErakpqZgIBKmtDa00CAShunARusAQCASVuhgJukgICASNzSHNYAgEhbuUDbvYDAgEfbtUCbqADAgEdboIEbpEEAgEbfBV8UAIBBH4LiQEWAgENjAELjwEWAgEIfw1/ygECARWAAQ2HARYCARGIAQ2IAd8BAgEOjQENjQG4AgIBC44BDY4BkwICAQl/tgF/xwECARh/nwF/qgECARaFATiFAVACARSCATmCAUwCARKIAXqIAdwBAgEPjQF7jQG1AgIBDI4BHo4B5gECAQo=</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="696,60.8" />
-      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="696,60.8" />
-      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="696,60.8" />
-      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="696,164.8" />
-      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="696,22.4" />
-      <sap2010:ViewStateData Id="DeserializeJson`1_2" sap:VirtualizedContainerService.HintSize="313.6,60.8" />
-      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="313.6,60.8" />
-      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
-      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="336,419.2">
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="697,60" />
+      <sap2010:ViewStateData Id="Assign_3" sap:VirtualizedContainerService.HintSize="697,60" />
+      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="697,60" />
+      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="697,164" />
+      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="697,22" />
+      <sap2010:ViewStateData Id="DeserializeJson`1_2" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="314,60" />
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="336,415">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
-      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
-      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="336,280">
+      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="336,277">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="696,569.6" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="718.4,1264">
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="697,563" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="719,1253">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="740.8,1528.8">
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="741,1539">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -187,7 +188,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="CreateProcess_Specific_Queue_1" sap:VirtualizedContainerService.HintSize="780.8,1608.8" />
+      <sap2010:ViewStateData Id="CreateProcess_Specific_Queue_1" sap:VirtualizedContainerService.HintSize="781,1619" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

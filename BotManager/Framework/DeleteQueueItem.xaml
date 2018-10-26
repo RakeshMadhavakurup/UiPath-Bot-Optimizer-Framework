@@ -13,6 +13,7 @@
     <x:Property Name="in_Orch_BaseUrl" Type="InArgument(x:String)" />
     <x:Property Name="in_AccessToken" Type="InArgument(x:String)" />
     <x:Property Name="in_QueueItemID" Type="InArgument(x:String)" />
+    <x:Property Name="in_HttpTimeoutMS" Type="InArgument(x:Int32)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -65,12 +66,12 @@
       <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="Delete a given queue item from the orchestrator queue&#xA;&#xA;Inputs:- &#xA;Orchestrator Base URL&#xA;Orchestrator Access Token &#xA;QueueName&#xA;QueueItemID&#xA;" DisplayName="DeleteQueueItem" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="Delete a given queue item from the process specific orchestrator queue&#xA;&#xA;Inputs:- &#xA;  Orchestrator Base URL&#xA;  Orchestrator Access Token &#xA;  QueueName&#xA;  QueueItemID&#xA;  Http Timeout (in milliseconds)" DisplayName="DeleteQueueItem" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="x:Int32" Name="http_Status" />
       <Variable x:TypeArguments="x:String" Name="http_Response" />
     </Sequence.Variables>
-    <ui:HttpClient Body="{x:Null}" ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="JSON" BodyFormat="application/json" DisplayName="HTTP Request" EndPoint="[in_Orch_BaseUrl + &quot;/odata/QueueItems(&quot; + in_QueueItemID + &quot;)&quot;]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="DELETE" Result="[http_Response]" StatusCode="[http_Status]" TimeoutMS="6000">
+    <ui:HttpClient Body="{x:Null}" ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="JSON" BodyFormat="application/json" DisplayName="HTTP Request" EndPoint="[in_Orch_BaseUrl + &quot;/odata/QueueItems(&quot; + in_QueueItemID + &quot;)&quot;]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="DELETE" Result="[http_Response]" StatusCode="[http_Status]" TimeoutMS="[in_HttpTimeoutMS]">
       <ui:HttpClient.Attachments>
         <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
       </ui:HttpClient.Attachments>
@@ -97,30 +98,30 @@
         </Sequence>
       </If.Else>
     </If>
-    <sads:DebugSymbol.Symbol>d2hDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xEZWxldGVRdWV1ZUl0ZW0ueGFtbBFEA2UOAgEBSQVWFQIBE1cFYwoCAQJJpARJqgQCAR1ORk5WAgEbSe0DSf4DAgEZSdECSaYDAgEWSYoESZkEAgEUVxNXYgIBA1kJWxQCAQ9eCWEUAgEIWgta8QECARBfC1/qAQIBC2ALYM0BAgEJWnha7gECARFfeV/nAQIBDGAcYKABAgEK</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2hDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xEZWxldGVRdWV1ZUl0ZW0ueGFtbBFFA2YOAgEBSgVXFQIBE1gFZAoCAQJKpARKuAQCAR1PRk9WAgEbSu0DSv4DAgEZStECSqYDAgEWSooESpkEAgEUWBNYYgIBA1oJXBQCAQ9fCWIUAgEIWwtb8QECARBgC2DqAQIBC2ELYc0BAgEJW3hb7gECARFgeWDnAQIBDGEcYaABAgEK</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="696,22.4" />
-      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="336,217.6">
+      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="697,22" />
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="336,215">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
-      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,280">
+      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,277">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="696,430.4" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="718.4,757.6">
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="697,425" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="719,743">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -128,7 +129,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DeleteQueueItem_1" sap:VirtualizedContainerService.HintSize="758.4,837.6" />
+      <sap2010:ViewStateData Id="DeleteQueueItem_1" sap:VirtualizedContainerService.HintSize="759,823" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

@@ -1,4 +1,4 @@
-﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RemoveQueueItemFromDB" this:RemoveQueueItemFromDB.in_QueueTableName="LocalMasterQueue"
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RemoveQueueItemFromDB"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
@@ -10,7 +10,6 @@
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
  xmlns:sds="clr-namespace:System.Data.SQLite;assembly=System.Data.SQLite"
- xmlns:this="clr-namespace:"
  xmlns:ui="http://schemas.uipath.com/workflow/activities"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
@@ -74,26 +73,27 @@
       <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="RemoveQueueItemFromDB" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="Remove a queue item from Local DB as soon as it gets processed (even for failed items). &#xD;&#xA;Master queue items which are in in-progress status will be maintained in Local database so that it can be assigned to idle robots easily. &#xD;&#xA;&#xD;&#xA;Inputs:-&#xD;&#xA;  Transaction ID&#xD;&#xA;  SQLite Connection&#xD;&#xA;  Queue table name&#xD;&#xA;  " DisplayName="RemoveQueueItemFromDB" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="queryResult" />
     </Sequence.Variables>
     <s:ExecuteQuery DatabaseFullPath="{x:Null}" Connection="[in_SQLiteConnection]" DisplayName="Execute query" sap2010:WorkflowViewState.IdRef="ExecuteQuery_1" QueryResult="[queryResult]" SQLCommand="[&quot;DELETE FROM &quot; + in_QueueTableName + &quot; WHERE TransactionID= '&quot; + in_TransactionID + &quot;';&quot;]" />
-    <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;LocalQueueDB entry updated for TransactionID : '&quot; + in_TransactionID + &quot;'&quot;]" />
-    <sads:DebugSymbol.Symbol>d25DOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xSZW1vdmVRdWV1ZUl0ZW1Gcm9tREIueGFtbAgBeAGJAQECTQNUDgIBAVEFUcUCAgEFUgVS2AECAQJRrQFRvAECAQtRPFFTAgEJUcgBUcICAgEGUnJS1QECAQM=</sads:DebugSymbol.Symbol>
+    <ui:LogMessage DisplayName="Log Message" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;Local DB entry updated successfully for TransactionID : '&quot; + in_TransactionID + &quot;'&quot;]" />
+    <sads:DebugSymbol.Symbol>d25DOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xSZW1vdmVRdWV1ZUl0ZW1Gcm9tREIueGFtbAdMA1MOAgEBUAVQxQICAQVRBVHhAQIBAlCtAVC8AQIBC1A8UFMCAQlQyAFQwgICAQZRclHeAQIBAw==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
       <sap2010:ViewStateData Id="ExecuteQuery_1" sap:VirtualizedContainerService.HintSize="314,22" />
       <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,91" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="336,277">
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="336,454">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="RemoveQueueItemFromDB_1" sap:VirtualizedContainerService.HintSize="376,357" />
+      <sap2010:ViewStateData Id="RemoveQueueItemFromDB_1" sap:VirtualizedContainerService.HintSize="376,534" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

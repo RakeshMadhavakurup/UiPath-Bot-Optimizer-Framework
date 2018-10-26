@@ -18,6 +18,7 @@
     <x:Property Name="in_RobotID" Type="InArgument(x:String)" />
     <x:Property Name="out_JobKey" Type="OutArgument(x:String)" />
     <x:Property Name="in_ProcessName" Type="InArgument(x:String)" />
+    <x:Property Name="in_HttpTimeoutMS" Type="InArgument(x:Int32)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -76,7 +77,7 @@
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="Create Job entry for a process to a specific robot&#xA;Inputs:- &#xA;Orchestrator Base Url&#xA;Orchestrator Access Token&#xA;ReleaseKey&#xA;Robot ID&#xA;Output:-&#xA;Job ID&#xA;" DisplayName="CreateJob" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="Create Job entry for a process to a specific robot&#xA;&#xD;&#xA;Inputs:- &#xA;  Orchestrator Base Url&#xA;  Orchestrator Access Token&#xA;  ReleaseKey&#xA;  Robot ID&#xD;&#xA;  Http Timeout (in milliseconds)&#xD;&#xA;&#xA;Output:-&#xA;  Job ID&#xA;" DisplayName="CreateJob" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="x:String" Name="jsonText" />
       <Variable x:TypeArguments="x:String" Name="http_Response" />
@@ -89,7 +90,7 @@
         <OutArgument x:TypeArguments="x:String" x:Key="JsonOut">[jsonText]</OutArgument>
       </ui:InvokeCode.Arguments>
     </ui:InvokeCode>
-    <ui:HttpClient ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="JSON" Body="[jsonText]" BodyFormat="application/json" DisplayName="HTTP Request" EndPoint="[in_Orch_BaseUrl + &quot;/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs&quot;]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="POST" Result="[http_Response]" StatusCode="[http_Status]" TimeoutMS="6000">
+    <ui:HttpClient ConsumerKey="{x:Null}" ConsumerSecret="{x:Null}" ContinueOnError="{x:Null}" OAuth1Token="{x:Null}" OAuth1TokenSecret="{x:Null}" OAuth2Token="{x:Null}" Password="{x:Null}" ResourcePath="{x:Null}" Username="{x:Null}" AcceptFormat="JSON" Body="[jsonText]" BodyFormat="application/json" DisplayName="HTTP Request" EndPoint="[in_Orch_BaseUrl + &quot;/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs&quot;]" sap2010:WorkflowViewState.IdRef="HttpClient_1" Method="POST" Result="[http_Response]" StatusCode="[http_Status]" TimeoutMS="[in_HttpTimeoutMS]">
       <ui:HttpClient.Attachments>
         <scg:Dictionary x:TypeArguments="x:String, InArgument(x:String)" />
       </ui:HttpClient.Attachments>
@@ -135,42 +136,42 @@
         </Sequence>
       </If.Else>
     </If>
-    <sads:DebugSymbol.Symbol>d2JDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xDcmVhdGVKb2IueGFtbCUBmAYBngYBBQGaAQG4BQEEAdcFAfwFAQMBXgF6AQJPA4sBDgIBAVUFWxUCAS1cBWkVAgEhagWJAQoCAQJYQFhMAgEyV0NXUgIBMFlBWUsCAS5cqARcrgQCASxchAJckAICASphRmFWAgEoXPEDXIIEAgEmXNMCXKwDAgEkXI4EXJ0EAgEiahNqTgIBA2wJgQEUAgEOhAEJhwEUAgEHcAtwyAECARxxC3gUAgEYeQuAARACAQ+FAQuFAegBAgEKhgELhgHEAQIBCHC0AXDFAQIBH3CdAXCoAQIBHXY2dloCARtzN3NDAgEZeRl5NAIBEHsPfhoCARKFAXmFAeUBAgELhgEchgGXAQIBCXwRfNYBAgEVfRF9sgECARN8f3zTAQIBFn0ifYUBAgEU</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d2JDOlxVc2Vyc1xSUEFVc2VyXERvY3VtZW50c1xVaVBhdGhcQm90LU1hbmFnZXItRnJhbWV3b3JrLVNRTGl0ZVxCb3RNYW5hZ2VyXEZyYW1ld29ya1xDcmVhdGVKb2IueGFtbCUBmAYBngYBBQGaAQG4BQEEAdcFAfwFAQMBXgF6AQJQA4wBDgIBAVYFXBUCAS5dBWoVAgEhawWKAQoCAQJZQFlMAgEzWENYUgIBMVpBWksCAS9dqARdvAQCASxdhAJdkAICASpiRmJWAgEoXfEDXYIEAgEmXdMCXawDAgEkXY4EXZ0EAgEiaxNrTgIBA20JggEUAgEOhQEJiAEUAgEHcQtxyAECARxyC3kUAgEYeguBARACAQ+GAQuGAegBAgEKhwELhwHEAQIBCHG0AXHFAQIBH3GdAXGoAQIBHXc2d1oCARt0N3RDAgEZehl6NAIBEHwPfxoCARKGAXmGAeUBAgELhwEchwGXAQIBCX0RfdYBAgEVfhF+sgECARN9f33TAQIBFn4ifoUBAgEU</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="846.4,164.8" />
-      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="846.4,22.4" />
-      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="464,60.8" />
-      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="464,60.8" />
-      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
-      <sap2010:ViewStateData Id="Throw_2" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
-      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="336,280">
+      <sap2010:ViewStateData Id="InvokeCode_1" sap:VirtualizedContainerService.HintSize="847,164" />
+      <sap2010:ViewStateData Id="HttpClient_1" sap:VirtualizedContainerService.HintSize="847,22" />
+      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="LogMessage_2" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Throw_2" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="336,277">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,430.4" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="486.4,756.8">
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,425" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="486,749">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="313.6,92.8" />
-      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="313.6,22.4" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,280">
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,91" />
+      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="336,277">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="846.4,907.2" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="868.8,1455.2">
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="847,897" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="869,1479">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -178,7 +179,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="CreateJob_1" sap:VirtualizedContainerService.HintSize="908.8,1535.2" />
+      <sap2010:ViewStateData Id="CreateJob_1" sap:VirtualizedContainerService.HintSize="909,1759" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
