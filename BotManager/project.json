@@ -1,6 +1,6 @@
 {
-  "name": "BotManager",
-  "description": "Bot Manager Framework",
+  "name": "Hub and Spoke Framework",
+  "description": "A framework to enable efficient distribution of workload among idle robots",
   "main": "Main.xaml",
   "dependencies": {},
   "excludedData": [
