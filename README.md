@@ -2,7 +2,7 @@
 
 UiPath Bot Manager Framework aims to function as a workload manager for robots by distributing transactions across available robots. 
 
-On a high level, there are 3 logical components to this framework; <br>a) Hub/Master Robot <br>b) Master Queue <br>c) Master Config. <br>The Hub robot runs non-stop as a background job checking for requests in Master Queue. The Master Config spreadsheet maintains the framework configuration data such as process to robot mapping, orchestrator details, assets and other configuration parameters. 
+On a high level, there are 4 logical components to this framework; <br>a) Hub/Master Robot <br>b) Master Queue <br>c) Master Config<br>d) Spoke/Child Robots <br><br>The Hub robot runs non-stop as a background job checking for requests in Master Queue. The Master Config spreadsheet maintains the framework configuration data such as process to robot mapping, orchestrator details, assets and other configuration parameters. 
 
 A new transaction for a process is triggered by creating a transaction item in the master queue. The transaction item will contain all the inputs for the master bot and well as the inputs required by the intended process. The master bot reads each trasnsactions from the master queue and assigs to a robot based on the availability. The master bot ensures the optimum utilization of robots by keeping robots occupied as more requests arrives.
 
