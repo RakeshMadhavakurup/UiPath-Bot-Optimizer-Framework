@@ -1,6 +1,6 @@
-# UiPath-Hub-and-Spoke-Framework
+# UiPath-Bot-Optimizer-Framework
 
-UiPath Hub and Spoke Framework aims for efficient utilization of robots by distributing workload across idle robots(Spoke bots) using a master robot(Hub bot).
+UiPath Bot Optimizer Framework aims for efficient utilization of robots by distributing workload across idle robots(Spoke bots) using a master robot(Hub bot).
 
 On a high level, there are 4 logical components to this framework; <br>a) Hub/Master Robot <br>b) Master Queue <br>c) Master Config<br>d) Spoke/Child Robots <br><br>The Hub robot runs non-stop as a background job checking for requests in Master Queue. The Master Config spreadsheet maintains the framework configuration data such as process to robot mapping, orchestrator details, assets and other configuration parameters. 
 
