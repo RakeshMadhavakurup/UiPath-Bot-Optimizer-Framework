@@ -1,5 +1,5 @@
 {
-  "name": "Hub and Spoke Framework",
+  "name": "Bot Optimizer Framework",
   "description": "A framework to enable efficient distribution of workload among idle robots",
   "main": "Main.xaml",
   "dependencies": {},

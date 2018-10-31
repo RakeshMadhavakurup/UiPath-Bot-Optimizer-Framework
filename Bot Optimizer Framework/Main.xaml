@@ -75,7 +75,7 @@
       <AssemblyReference>System.Data.SQLite</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <StateMachine sap2010:Annotation.AnnotationText="A centralized bot(Hub bot) to dispatch transactions to available bots(Spoke bots) in round robin fashion. &#xA;" DisplayName="Hub and Spoke Framework" sap2010:WorkflowViewState.IdRef="StateMachine_1">
+  <StateMachine sap2010:Annotation.AnnotationText="A centralized bot(Hub bot) to dispatch transactions to available bots(Spoke bots) in round robin fashion. &#xA;" DisplayName="Bot Optimizer Framework" sap2010:WorkflowViewState.IdRef="StateMachine_1">
     <StateMachine.InitialState>
       <State x:Name="__ReferenceID3" sap2010:Annotation.AnnotationText="Read Config file, initialize error variables" DisplayName="Init" sap2010:WorkflowViewState.IdRef="State_2">
         <State.Entry>
